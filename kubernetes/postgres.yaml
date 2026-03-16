@@ -1,38 +1,223 @@
-# ── One StatefulSet per service database ──────────────────────
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-users
 spec:
   selector:
-    matchLabels: { app: postgres-users }
+    matchLabels:
+      app: postgres-users
   serviceName: postgres-users
   replicas: 1
   template:
     metadata:
-      labels: { app: postgres-users }
+      labels:
+        app: postgres-users
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        env:
-        - { name: POSTGRES_DB,       value: restaurant_users }
-        - { name: POSTGRES_USER,     value: postgres }
-        - { name: POSTGRES_PASSWORD, value: postgres }
-        ports: [{ containerPort: 5432 }]
-        volumeMounts:
-        - { name: data, mountPath: /var/lib/postgresql/data }
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: restaurant_users
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
   volumeClaimTemplates:
-  - metadata: { name: data }
-    spec:
-      accessModes: [ReadWriteOnce]
-      resources:
-        requests: { storage: 1Gi }
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: postgres-users }
+metadata:
+  name: postgres-users
 spec:
-  selector: { app: postgres-users }
-  ports: [{ port: 5432 }]
+  selector:
+    app: postgres-users
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-menu
+spec:
+  selector:
+    matchLabels:
+      app: postgres-menu
+  serviceName: postgres-menu
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-menu
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: restaurant_menu
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-menu
+spec:
+  selector:
+    app: postgres-menu
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-orders
+spec:
+  selector:
+    matchLabels:
+      app: postgres-orders
+  serviceName: postgres-orders
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-orders
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: restaurant_orders
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-orders
+spec:
+  selector:
+    app: postgres-orders
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-reservations
+spec:
+  selector:
+    matchLabels:
+      app: postgres-reservations
+  serviceName: postgres-reservations
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-reservations
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: restaurant_reservations
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-reservations
+spec:
+  selector:
+    app: postgres-reservations
+  ports:
+    - port: 5432
+      targetPort: 5432
   clusterIP: None

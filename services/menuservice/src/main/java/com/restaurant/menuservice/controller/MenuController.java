@@ -19,6 +19,12 @@ public class MenuController {
     public ResponseEntity<MenuItem> getById(@PathVariable Long id) {
         return ResponseEntity.ok(menuService.getById(id));
     }
+    /** GET /api/menu/featured
+     *  Returns only featured dishes for the home page */
+    @GetMapping("/featured")
+    public ResponseEntity<List<MenuItem>> getFeatured() {
+        return ResponseEntity.ok(menuService.getFeatured());
+    }
     @GetMapping("/categories")
     public ResponseEntity<List<String>> categories() {
         return ResponseEntity.ok(menuService.getCategories());

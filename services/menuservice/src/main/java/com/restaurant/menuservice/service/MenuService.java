@@ -21,6 +21,10 @@ public class MenuService {
         return repo.findAll().stream().map(MenuItem::getCategory).distinct().sorted().toList();
     }
     public MenuItem create(MenuItem item) { return repo.save(item); }
+    // Get featured items for home page
+    public List<MenuItem> getFeatured() {
+        return repo.findByFeaturedTrue();
+    }
     public MenuItem update(Long id, MenuItem updated) {
         MenuItem existing = getById(id);
         existing.setName(updated.getName()); existing.setDescription(updated.getDescription());
