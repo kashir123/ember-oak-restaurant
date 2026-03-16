@@ -1,0 +1,156 @@
+# ── User Service ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: user-service }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: user-service }
+  template:
+    metadata:
+      labels: { app: user-service }
+    spec:
+      containers:
+      - name: user-service
+        image: restaurant/user-service:1.0.0
+        ports: [{ containerPort: 8081 }]
+        envFrom: [{ configMapRef: { name: restaurant-config } }]
+        env:
+        - { name: DB_HOST, value: postgres-users }
+        - { name: DB_NAME, valueFrom: { configMapKeyRef: { name: restaurant-config, key: USER_DB_NAME } } }
+        readinessProbe:
+          httpGet: { path: /api/users/health, port: 8081 }
+          initialDelaySeconds: 30
+        livenessProbe:
+          httpGet: { path: /api/users/health, port: 8081 }
+          initialDelaySeconds: 60
+---
+apiVersion: v1
+kind: Service
+metadata: { name: user-service }
+spec:
+  selector: { app: user-service }
+  ports: [{ port: 8081, targetPort: 8081 }]
+---
+# ── Menu Service ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: menu-service }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: menu-service }
+  template:
+    metadata:
+      labels: { app: menu-service }
+    spec:
+      containers:
+      - name: menu-service
+        image: restaurant/menu-service:1.0.0
+        ports: [{ containerPort: 8082 }]
+        envFrom: [{ configMapRef: { name: restaurant-config } }]
+        env:
+        - { name: DB_HOST, value: postgres-menu }
+        - { name: DB_NAME, valueFrom: { configMapKeyRef: { name: restaurant-config, key: MENU_DB_NAME } } }
+        readinessProbe:
+          httpGet: { path: /api/menu/health, port: 8082 }
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata: { name: menu-service }
+spec:
+  selector: { app: menu-service }
+  ports: [{ port: 8082, targetPort: 8082 }]
+---
+# ── Order Service ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: order-service }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: order-service }
+  template:
+    metadata:
+      labels: { app: order-service }
+    spec:
+      containers:
+      - name: order-service
+        image: restaurant/order-service:1.0.0
+        ports: [{ containerPort: 8083 }]
+        envFrom: [{ configMapRef: { name: restaurant-config } }]
+        env:
+        - { name: DB_HOST, value: postgres-orders }
+        - { name: DB_NAME, valueFrom: { configMapKeyRef: { name: restaurant-config, key: ORDER_DB_NAME } } }
+        readinessProbe:
+          httpGet: { path: /api/orders/health, port: 8083 }
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata: { name: order-service }
+spec:
+  selector: { app: order-service }
+  ports: [{ port: 8083, targetPort: 8083 }]
+---
+# ── Reservation Service ───────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: reservation-service }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: reservation-service }
+  template:
+    metadata:
+      labels: { app: reservation-service }
+    spec:
+      containers:
+      - name: reservation-service
+        image: restaurant/reservation-service:1.0.0
+        ports: [{ containerPort: 8084 }]
+        envFrom: [{ configMapRef: { name: restaurant-config } }]
+        env:
+        - { name: DB_HOST, value: postgres-reservations }
+        - { name: DB_NAME, valueFrom: { configMapKeyRef: { name: restaurant-config, key: RES_DB_NAME } } }
+        readinessProbe:
+          httpGet: { path: /api/reservations/health, port: 8084 }
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata: { name: reservation-service }
+spec:
+  selector: { app: reservation-service }
+  ports: [{ port: 8084, targetPort: 8084 }]
+---
+# ── API Gateway ───────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: api-gateway }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: api-gateway }
+  template:
+    metadata:
+      labels: { app: api-gateway }
+    spec:
+      containers:
+      - name: api-gateway
+        image: restaurant/api-gateway:1.0.0
+        ports: [{ containerPort: 8080 }]
+        env:
+        - { name: USER_SERVICE_HOST,        value: user-service }
+        - { name: MENU_SERVICE_HOST,        value: menu-service }
+        - { name: ORDER_SERVICE_HOST,       value: order-service }
+        - { name: RESERVATION_SERVICE_HOST, value: reservation-service }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: api-gateway }
+spec:
+  selector: { app: api-gateway }
+  type: LoadBalancer
+  ports: [{ port: 80, targetPort: 8080 }]

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu — Ember & Oak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css" />
+  <style>
+    .menu-filters { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .filter-btn {
+      background: var(--clr-surface-2); border: 1px solid var(--clr-border);
+      color: var(--clr-text-muted); padding: 0.5rem 1.25rem;
+      border-radius: 2rem; font-size: 0.8rem; font-family: var(--ff-sans);
+      letter-spacing: 0.08em; cursor: pointer; transition: var(--transition);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--clr-accent); border-color: var(--clr-accent); color: var(--clr-bg);
+    }
+    .menu-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    @media(max-width:900px){ .menu-grid{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .menu-grid{grid-template-columns:1fr;} }
+    .menu-section-title {
+      font-family: var(--ff-serif); font-size: 2rem; font-weight: 300;
+      color: var(--clr-accent-lt); margin: 3rem 0 1.5rem;
+      padding-bottom: 0.75rem; border-bottom: 1px solid var(--clr-border);
+    }
+    .cart-float {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      background: var(--clr-accent); color: var(--clr-bg);
+      padding: 1rem 1.5rem; border-radius: 2rem;
+      font-family: var(--ff-sans); font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; display: none; align-items: center; gap: 0.75rem;
+      border: none; box-shadow: 0 4px 20px rgba(201,146,58,0.4);
+    }
+    .cart-float.visible { display: flex; }
+    .cart-float__count {
+      background: var(--clr-bg); color: var(--clr-accent);
+      border-radius: 50%; width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled">
+    <a href="../index.html" class="nav__logo">Ember &amp; Oak</a>
+    <ul class="nav__links">
+      <li><a href="../index.html" class="nav__link">Home</a></li>
+      <li><a href="menu.html" class="nav__link active">Menu</a></li>
+      <li><a href="order.html" class="nav__link">Order</a></li>
+      <li><a href="reservation.html" class="nav__link">Reserve</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <a href="order.html" class="btn btn--ghost">View Order <span id="cartBadge" style="display:none;background:#fff;color:var(--clr-accent);border-radius:50%;padding:0 5px;font-size:.7rem;margin-left:.4rem;"></span></a>
+  </nav>
+
+  <header class="page-header">
+    <span class="section__label">Seasonal Selections</span>
+    <h1 class="section__title">Our Menu</h1>
+    <p>Crafted fresh daily. Sourced locally. Cooked over live fire.</p>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <!-- Category Filters -->
+      <div class="menu-filters" id="filters">
+        <button class="filter-btn active" data-cat="all">All</button>
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Menu Items Grid -->
+      <div id="menuContent">
+        <div class="menu-grid" id="menuGrid">
+          <!-- Skeleton cards -->
+          <div class="dish-card skeleton" style="height:320px"></div>
+          <div class="dish-card skeleton" style="height:320px"></div>
+          <div class="dish-card skeleton" style="height:320px"></div>
+          <div class="dish-card skeleton" style="height:320px"></div>
+          <div class="dish-card skeleton" style="height:320px"></div>
+          <div class="dish-card skeleton" style="height:320px"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Cart Button -->
+  <button class="cart-float" id="cartFloat" onclick="window.location='order.html'">
+    <span>View My Order</span>
+    <span class="cart-float__count" id="cartCount">0</span>
+  </button>
+
+  <footer class="footer">
+    <div class="footer__inner container">
+      <div class="footer__brand">
+        <p class="footer__logo">Ember &amp; Oak</p>
+        <p>Open Tue–Sun, 5pm–11pm</p>
+      </div>
+    </div>
+    <div class="footer__bottom container"><p>&copy; 2025 Ember &amp; Oak</p></div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/menu.js"></script>
+</body>
+</html>

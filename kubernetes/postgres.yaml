@@ -1,0 +1,38 @@
+# ── One StatefulSet per service database ──────────────────────
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-users
+spec:
+  selector:
+    matchLabels: { app: postgres-users }
+  serviceName: postgres-users
+  replicas: 1
+  template:
+    metadata:
+      labels: { app: postgres-users }
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - { name: POSTGRES_DB,       value: restaurant_users }
+        - { name: POSTGRES_USER,     value: postgres }
+        - { name: POSTGRES_PASSWORD, value: postgres }
+        ports: [{ containerPort: 5432 }]
+        volumeMounts:
+        - { name: data, mountPath: /var/lib/postgresql/data }
+  volumeClaimTemplates:
+  - metadata: { name: data }
+    spec:
+      accessModes: [ReadWriteOnce]
+      resources:
+        requests: { storage: 1Gi }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: postgres-users }
+spec:
+  selector: { app: postgres-users }
+  ports: [{ port: 5432 }]
+  clusterIP: None

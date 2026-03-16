@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order — Ember & Oak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css"/>
+  <style>
+    .order-layout { display: grid; grid-template-columns: 1fr 380px; gap: 3rem; align-items: start; }
+    @media(max-width:900px){ .order-layout{grid-template-columns:1fr;} }
+
+    .order-panel {
+      background: var(--clr-surface); border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg); padding: 2rem; position: sticky; top: 6rem;
+    }
+    .order-panel h2 { font-family: var(--ff-serif); font-size: 1.8rem; font-weight: 300; margin-bottom: 1.5rem; }
+
+    .cart-items { list-style: none; margin-bottom: 1.5rem; }
+    .cart-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 0; border-bottom: 1px solid var(--clr-border);
+      gap: 1rem;
+    }
+    .cart-item__info { flex: 1; }
+    .cart-item__name { font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .cart-item__price { font-size: 0.82rem; color: var(--clr-text-muted); }
+    .cart-item__qty {
+      display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
+    }
+    .qty-btn {
+      background: var(--clr-surface-2); border: 1px solid var(--clr-border);
+      color: var(--clr-text); width: 28px; height: 28px; border-radius: var(--radius);
+      cursor: pointer; font-size: 1rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .qty-btn:hover { background: var(--clr-accent); border-color: var(--clr-accent); color: var(--clr-bg); }
+
+    .cart-totals { margin: 1.5rem 0; }
+    .cart-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--clr-text-muted); margin-bottom: 0.4rem; }
+    .cart-row.total { color: var(--clr-text); font-size: 1.1rem; font-family: var(--ff-serif); font-weight: 400; padding-top: 0.75rem; border-top: 1px solid var(--clr-border); margin-top: 0.75rem; }
+
+    .empty-cart { text-align: center; padding: 3rem 0; color: var(--clr-text-muted); }
+    .empty-cart a { color: var(--clr-accent); }
+
+    .order-form-section h3 { font-family: var(--ff-serif); font-size: 1.5rem; font-weight: 300; margin-bottom: 1.5rem; }
+    .order-type { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .type-btn {
+      flex: 1; padding: 0.85rem; background: var(--clr-surface-2);
+      border: 1px solid var(--clr-border); color: var(--clr-text-muted);
+      border-radius: var(--radius); cursor: pointer; font-family: var(--ff-sans);
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: var(--transition);
+    }
+    .type-btn.active { border-color: var(--clr-accent); color: var(--clr-accent); background: rgba(201,146,58,0.08); }
+
+    .order-success {
+      text-align: center; padding: 3rem 0;
+    }
+    .order-success__icon { font-size: 3rem; margin-bottom: 1rem; }
+    .order-success h3 { font-family: var(--ff-serif); font-size: 2rem; margin-bottom: 0.75rem; }
+    .order-success p { color: var(--clr-text-muted); }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled">
+    <a href="../index.html" class="nav__logo">Ember &amp; Oak</a>
+    <ul class="nav__links">
+      <li><a href="../index.html" class="nav__link">Home</a></li>
+      <li><a href="menu.html" class="nav__link">Menu</a></li>
+      <li><a href="order.html" class="nav__link active">Order</a></li>
+      <li><a href="reservation.html" class="nav__link">Reserve</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <span class="section__label">Online Ordering</span>
+    <h1 class="section__title">Your Order</h1>
+    <p>Review your selections and place your order below.</p>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="order-layout">
+        <!-- LEFT: Order Form -->
+        <div class="order-form-section">
+          <div id="orderSuccess" class="order-success" style="display:none">
+            <div class="order-success__icon">✅</div>
+            <h3>Order Confirmed!</h3>
+            <p>Your order <strong id="orderId"></strong> has been placed.<br>We'll have it ready shortly.</p>
+            <a href="menu.html" class="btn btn--primary" style="margin-top:2rem">Order More</a>
+          </div>
+
+          <div id="orderForm">
+            <h3>Delivery Details</h3>
+
+            <div class="order-type">
+              <button class="type-btn active" id="btnDineIn"   onclick="setType('DINE_IN')">🍽 Dine-In</button>
+              <button class="type-btn"        id="btnTakeout"  onclick="setType('TAKEOUT')">🥡 Takeout</button>
+              <button class="type-btn"        id="btnDelivery" onclick="setType('DELIVERY')">🛵 Delivery</button>
+            </div>
+
+            <div id="alertBox" class="alert alert--hidden"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="firstName" placeholder="John" required/>
+              </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="lastName" placeholder="Doe" required/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="john@example.com" required/>
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phone" placeholder="+1 (212) 555-0100" required/>
+              </div>
+            </div>
+
+            <div id="deliveryFields" style="display:none">
+              <div class="form-group">
+                <label>Delivery Address</label>
+                <input type="text" id="address" placeholder="123 Main St, New York, NY 10001"/>
+              </div>
+            </div>
+
+            <div id="tableField">
+              <div class="form-group">
+                <label>Table Number (optional)</label>
+                <input type="number" id="tableNumber" placeholder="e.g. 12" min="1" max="50"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Special Requests</label>
+              <textarea id="notes" placeholder="Allergies, dietary restrictions, special occasions..."></textarea>
+            </div>
+
+            <button class="btn btn--primary" id="placeOrderBtn" onclick="placeOrder()" style="width:100%">
+              Place Order
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Cart Summary -->
+        <div class="order-panel">
+          <h2>Order Summary</h2>
+          <div id="cartSummary"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner container">
+      <div class="footer__brand"><p class="footer__logo">Ember &amp; Oak</p></div>
+    </div>
+    <div class="footer__bottom container"><p>&copy; 2025 Ember &amp; Oak</p></div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/order.js"></script>
+</body>
+</html>

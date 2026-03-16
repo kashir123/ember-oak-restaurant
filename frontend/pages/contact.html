@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — Ember & Oak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css"/>
+  <style>
+    .contact-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:4rem; align-items:start; }
+    @media(max-width:900px){ .contact-layout{grid-template-columns:1fr;} }
+    .contact-info h2 { font-family:var(--ff-serif); font-size:2.2rem; font-weight:300; margin-bottom:1.5rem; }
+    .contact-info p  { color:var(--clr-text-muted); margin-bottom:2rem; }
+    .contact-block   { margin-bottom:2rem; }
+    .contact-block h4 { font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:var(--clr-accent); margin-bottom:.75rem; }
+    .contact-block p  { color:var(--clr-text-muted); font-size:.92rem; margin-bottom:.3rem; }
+    .contact-block a  { color:var(--clr-text); text-decoration:none; transition:color var(--transition); }
+    .contact-block a:hover { color:var(--clr-accent); }
+    .map-placeholder {
+      width:100%; height:220px; background:var(--clr-surface-2);
+      border-radius:var(--radius-lg); border:1px solid var(--clr-border);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--clr-text-muted); font-size:.88rem; margin-top:1.5rem;
+    }
+    .contact-form-card {
+      background:var(--clr-surface); border:1px solid var(--clr-border);
+      border-radius:var(--radius-lg); padding:2.5rem;
+    }
+    .contact-form-card h3 { font-family:var(--ff-serif); font-size:1.8rem; font-weight:300; margin-bottom:2rem; }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled">
+    <a href="../index.html" class="nav__logo">Ember &amp; Oak</a>
+    <ul class="nav__links">
+      <li><a href="../index.html" class="nav__link">Home</a></li>
+      <li><a href="menu.html" class="nav__link">Menu</a></li>
+      <li><a href="order.html" class="nav__link">Order</a></li>
+      <li><a href="reservation.html" class="nav__link">Reserve</a></li>
+      <li><a href="contact.html" class="nav__link active">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <span class="section__label">Get in Touch</span>
+    <h1 class="section__title">Contact Us</h1>
+    <p>We'd love to hear from you. Questions, events, feedback — we're all ears.</p>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="contact-layout">
+        <!-- Left: Info -->
+        <div class="contact-info">
+          <h2>We're Here<br>For You</h2>
+          <p>Whether you have a question about our menu, want to host a private event, or just want to share feedback from your last visit — reach out any time.</p>
+
+          <div class="contact-block">
+            <h4>Address</h4>
+            <p>42 West 18th Street</p>
+            <p>New York, NY 10011</p>
+          </div>
+          <div class="contact-block">
+            <h4>Phone</h4>
+            <p><a href="tel:+12125550198">+1 (212) 555-0198</a></p>
+          </div>
+          <div class="contact-block">
+            <h4>Email</h4>
+            <p><a href="mailto:hello@emberandoak.com">hello@emberandoak.com</a></p>
+            <p><a href="mailto:events@emberandoak.com">events@emberandoak.com</a></p>
+          </div>
+          <div class="contact-block">
+            <h4>Hours</h4>
+            <p>Tuesday – Thursday: 5:00 PM – 10:00 PM</p>
+            <p>Friday – Saturday:   5:00 PM – 11:00 PM</p>
+            <p>Sunday:              4:00 PM – 9:00 PM</p>
+            <p>Monday:              Closed</p>
+          </div>
+
+          <div class="map-placeholder">
+            📍 42 W 18th St, New York, NY 10011
+          </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="contact-form-card">
+          <h3>Send a Message</h3>
+          <div id="alertBox" class="alert alert--hidden"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="firstName" placeholder="Jane" required/>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" id="lastName" placeholder="Doe" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="jane@example.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="subject">
+              <option value="general">General Inquiry</option>
+              <option value="reservation">Reservation Help</option>
+              <option value="private-event">Private Event / Buyout</option>
+              <option value="feedback">Feedback</option>
+              <option value="press">Press & Media</option>
+              <option value="careers">Careers</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="message" rows="6" placeholder="How can we help you?"></textarea>
+          </div>
+          <button class="btn btn--primary" id="sendBtn" onclick="sendMessage()" style="width:100%">
+            Send Message
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner container">
+      <div class="footer__brand">
+        <p class="footer__logo">Ember &amp; Oak</p>
+        <p>Fine dining in the heart of NYC.</p>
+      </div>
+      <div class="footer__nav">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="order.html">Order Online</a></li>
+          <li><a href="reservation.html">Reservations</a></li>
+        </ul>
+      </div>
+      <div class="footer__contact">
+        <h4>Find Us</h4>
+        <p>42 West 18th Street<br>New York, NY 10011</p>
+        <p>+1 (212) 555-0198</p>
+      </div>
+    </div>
+    <div class="footer__bottom container"><p>&copy; 2025 Ember &amp; Oak</p></div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    async function sendMessage() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const message   = document.getElementById('message').value.trim();
+      if (!firstName || !email || !message) {
+        const el = document.getElementById('alertBox');
+        el.textContent = 'Please fill in all required fields.';
+        el.className = 'alert alert--error';
+        return;
+      }
+      const btn = document.getElementById('sendBtn');
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+      // Simulate API call
+      await new Promise(r => setTimeout(r, 1000));
+      const el = document.getElementById('alertBox');
+      el.textContent = '✓ Thank you! Your message has been received. We'll respond within 24 hours.';
+      el.className = 'alert alert--success';
+      btn.textContent = 'Send Message';
+      btn.disabled = false;
+      ['firstName','lastName','email','message'].forEach(id => document.getElementById(id).value = '');
+    }
+  </script>
+</body>
+</html>

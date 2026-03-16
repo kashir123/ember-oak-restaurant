@@ -1,0 +1,23 @@
+# Maven build files
+**/target/
+**/target
+*.jar
+*.war
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Environment files
+.env
+*.env.local
+
+# Docker volumes
+docker-volumes/
+
+# Logs
+*.log
+logs/
