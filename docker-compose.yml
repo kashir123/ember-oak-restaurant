@@ -68,6 +68,14 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Mail (local dev only) ──────────────────────────────────────
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
   # ── Microservices ─────────────────────────────────────────────
 
   user-service:
@@ -81,9 +89,14 @@ services:
       DB_USER: postgres
       DB_PASS: postgres
       JWT_SECRET: ember-oak-secret-key-change-in-production
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@emberandoak.com
     depends_on:
       postgres-users:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     restart: on-failure
 
   menu-service:
@@ -111,9 +124,14 @@ services:
       DB_NAME: restaurant_orders
       DB_USER: postgres
       DB_PASS: postgres
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@emberandoak.com
     depends_on:
       postgres-orders:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     restart: on-failure
 
   reservation-service:
@@ -126,9 +144,14 @@ services:
       DB_NAME: restaurant_reservations
       DB_USER: postgres
       DB_PASS: postgres
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@emberandoak.com
     depends_on:
       postgres-reservations:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     restart: on-failure
 
   # ── API Gateway ───────────────────────────────────────────────
