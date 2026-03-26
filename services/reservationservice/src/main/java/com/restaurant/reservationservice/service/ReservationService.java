@@ -2,6 +2,7 @@ package com.restaurant.reservationservice.service;
 import com.restaurant.reservationservice.model.Reservation;
 import com.restaurant.reservationservice.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
@@ -11,12 +12,22 @@ public class ReservationService {
     private final ReservationRepository repo;
     private static final int MAX_PER_SLOT = 3;
 
-    public Reservation book(Reservation res) { return repo.save(res); }
+    @Autowired(required = false)
+    private EmailNotificationService emailService;
+
+    public Reservation book(Reservation res) {
+        Reservation saved = repo.save(res);
+        if (emailService != null) emailService.sendReservationConfirmation(saved);
+        return saved;
+    }
     public List<Reservation> getAll()        { return repo.findAll(); }
     public Reservation getById(Long id)      { return repo.findById(id).orElseThrow(() -> new RuntimeException("Reservation not found")); }
     public List<Reservation> getByEmail(String email) { return repo.findByCustomerEmail(email); }
     public Reservation cancel(Long id) {
-        Reservation r = getById(id); r.setStatus(Reservation.ReservationStatus.CANCELLED); return repo.save(r);
+        Reservation r = getById(id); r.setStatus(Reservation.ReservationStatus.CANCELLED);
+        Reservation saved = repo.save(r);
+        if (emailService != null) emailService.sendReservationCancellation(saved);
+        return saved;
     }
 
     /** Returns list of unavailable time slots for a given date */

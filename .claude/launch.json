@@ -1,0 +1,53 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Full Stack (All Services)",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build"],
+      "port": 3000
+    },
+    {
+      "name": "Frontend (Nginx)",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "frontend"],
+      "port": 3000
+    },
+    {
+      "name": "API Gateway",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build", "api-gateway"],
+      "port": 8080
+    },
+    {
+      "name": "User Service",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build", "user-service"],
+      "port": 8081
+    },
+    {
+      "name": "Menu Service",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build", "menu-service"],
+      "port": 8082
+    },
+    {
+      "name": "Order Service",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build", "order-service"],
+      "port": 8083
+    },
+    {
+      "name": "Reservation Service",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "--build", "reservation-service"],
+      "port": 8084
+    },
+    {
+      "name": "MailHog (Email UI)",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["up", "mailhog"],
+      "port": 8025
+    }
+  ]
+}
